@@ -1,0 +1,26 @@
+CUSTOMER SUPPORT REPORT – JULY 2026
+
+Overview
+The support team received 428 customer tickets during July.
+
+Top Customer Complaints
+
+1. Analytics dashboard loads slowly for enterprise customers.
+
+2. Dark mode is not available.
+
+3. Users cannot export dashboards to PDF.
+
+4. Mobile application notifications are delayed.
+
+Customer Impact
+
+Enterprise customers reported a 25% productivity loss due to dashboard performance.
+
+Premium customers requested PDF export over 80 times this month.
+
+Support Recommendations
+
+- Prioritize dashboard optimization.
+- Introduce Dark Mode.
+- Add PDF Export.
