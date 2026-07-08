@@ -4,6 +4,7 @@ import time
 import uuid
 import streamlit as st
 from dotenv import load_dotenv
+from ingest import get_database_stats, ingest_data
 
 SUGGESTIONS = [
 
@@ -31,8 +32,14 @@ st.markdown("Ask complex questions about customer complaints, feature requests, 
 
 c1, c2, c3, c4 = st.columns(4)
 
-DOCUMENT_COUNT = 1
-CHUNK_COUNT = 1
+@st.cache_data
+def load_stats():
+    return get_database_stats()
+
+stats = load_stats()
+
+DOCUMENT_COUNT = stats["documents"]
+CHUNK_COUNT = stats["chunks"]
 
 c1.metric("Documents", DOCUMENT_COUNT)
 c2.metric("Chunks", CHUNK_COUNT)
@@ -58,20 +65,60 @@ with st.sidebar:
         help="Supported formats: TXT, PDF, DOCX, Markdown"
     )
     if uploaded_files:
-        st.success(f"{len(uploaded_files)} file(s) selected.")
+        st.success(f"{len(uploaded_files)} file(s) selected")
+
+        with st.expander("Selected Files", expanded=True):
+
+            for file in uploaded_files:
+
+                st.write(f"📄 {file.name}")
         
     if st.button("📚 Index Documents"):
         if not uploaded_files:
             st.warning("Please upload at least one document before indexing.")
         else:
-            st.success(f"Indexing {len(uploaded_files)} document(s)...")
+
+            os.makedirs("data", exist_ok=True)
+
+            new_files = 0
+            replaced_files = 0
+
+            for uploaded_file in uploaded_files:
+
+                file_path = os.path.join("data", uploaded_file.name)
+
+                if os.path.exists(file_path):
+                    replaced_files += 1
+                else:
+                    new_files += 1
+
+                with open(file_path, "wb") as f:
+                    f.write(uploaded_file.getbuffer())
+
+            load_stats.clear()
+
+            with st.spinner("Indexing documents..."):
+                stats = ingest_data()
+
+
+            st.success(
+                f"Indexed {stats['documents']} documents into {stats['chunks']} chunks."
+            )
+
+            if new_files:
+                st.info(f"➕ Added {new_files} new file(s).")
+
+            if replaced_files:
+                st.info(f"♻️ Updated {replaced_files} existing file(s).")
+
+            st.rerun()
 
     st.divider()
 
     st.subheader("Knowledge Base")
 
-    st.write("📄 Documents : 1")
-    st.write("🧩 Chunks : 1")
+    st.write(f"📄 Documents : {DOCUMENT_COUNT}")
+    st.write(f"🧩 Chunks : {CHUNK_COUNT}")
     st.write("🗄️ Vector DB : Chroma")
     st.write("🤖 Model : Gemini 2.5 Flash")
 
