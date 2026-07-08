@@ -150,10 +150,15 @@ try:
     load_dotenv()
 
     CHROMA_PATH = "chroma_db"
-
-    if not os.environ.get("GEMINI_API_KEY"):
-        st.error("Critical Error: GEMINI_API_KEY is missing from your .env file!")
-        st.stop()
+    
+    api_key = os.getenv("GEMINI_API_KEY")
+    if not api_key:
+        try:
+            api_key = st.secrets["GEMINI_API_KEY"]
+            os.environ["GEMINI_API_KEY"] = api_key
+        except Exception:
+            st.error("GEMINI_API_KEY not found.")
+            st.stop()
 
     @st.cache_resource
     def setup_agent():
