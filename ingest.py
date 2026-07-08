@@ -1,4 +1,5 @@
 import os
+import shutil
 from dotenv import load_dotenv
 from langchain_community.document_loaders import (
     TextLoader,
@@ -94,7 +95,8 @@ def ingest_data(data_path="data"):
     # loader = DirectoryLoader(DATA_PATH, glob="*.txt", loader_cls=TextLoader)
     # documents = loader.load()
     if os.path.exists(CHROMA_PATH):
-        print("Existing database found.")
+        print("Removing old database...")
+        shutil.rmtree(CHROMA_PATH)
         
     documents = load_documents(data_path)
 

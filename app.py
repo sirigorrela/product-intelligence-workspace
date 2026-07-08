@@ -166,9 +166,14 @@ try:
         embeddings = GoogleGenerativeAIEmbeddings(model="models/gemini-embedding-001")
         
         if not os.path.exists(CHROMA_PATH):
-            return "no_db"
+            st.info("📚 First-time setup. Building knowledge base...")
+            ingest_data()
         
-        vectorstore = Chroma(persist_directory=CHROMA_PATH, embedding_function=embeddings)
+        vectorstore = Chroma(
+            persist_directory=CHROMA_PATH,
+            embedding_function=embeddings,
+            collection_name="knowledge_base",
+        )
         retriever = vectorstore.as_retriever(search_kwargs={"k": 5})
 
         def search_knowledge(query: str) -> str:
@@ -214,9 +219,9 @@ try:
 
     agent = setup_agent()
 
-    if agent == "no_db":
-        st.warning("⚠️ Database folder 'chroma_db' not found. Did you run './venv/bin/python3 ingest.py' first?")
-        st.stop()
+    # if agent == "no_db":
+    #     st.warning("⚠️ Database folder 'chroma_db' not found. Did you run './venv/bin/python3 ingest.py' first?")
+    #     st.stop()
 
     # status_box.empty()
 
