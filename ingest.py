@@ -94,9 +94,9 @@ def ingest_data(data_path="data"):
     print(f"📂 Loading documents from '{data_path}'...")
     # loader = DirectoryLoader(DATA_PATH, glob="*.txt", loader_cls=TextLoader)
     # documents = loader.load()
-    if os.path.exists(CHROMA_PATH):
-        print("Removing old database...")
-        shutil.rmtree(CHROMA_PATH)
+    # if os.path.exists(CHROMA_PATH):
+    #     print("Removing old database...")
+    #     shutil.rmtree(CHROMA_PATH)
         
     documents = load_documents(data_path)
 
